@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Node Bomber</title>
+  </head>
+  <body>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      var socket = io();
+      var mytoken = null;
+
+      var move = function(pos) {
+        if(mytoken === null) return;
+        pos['token'] = mytoken;
+        socket.emit('move', pos);
+      }
+
+      var placeBomb = function(pos) {
+        if(mytoken === null) return;
+        pos['token'] = mytoken;
+        socket.emit('placeBomb', pos);
+      }
+
+      socket.on('token', function(data) {
+        mytoken = data;
+      });
+
+      socket.on('move', function(data) {
+        console.log(data);
+      });
+    </script>
+
+  </body>
+</html>
