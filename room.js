@@ -1,16 +1,16 @@
 var uuid = require('node-uuid');
 
 var Room = function() {
-    return {
+  return {
 
-        id: uuid.v1(),
-        players: 0,
+	  id: uuid.v1(),
+	  players: 0,
 
-        addPlayer: function() {
-            return ++this.players;
-        }
+	  addPlayer: function() {
+	    return ++this.players;
+	  }
 
-    }
+  }
 
 }
 
