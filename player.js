@@ -5,6 +5,27 @@ var config = require('./config');
 var server_key = require('./server-key');
 var Bomb  = require('./bomb');
 
+var move = function(data) {
+
+    var decoded = jwt.verify(data.token, server_key);
+    global.io.in(decoded.room).emit('move', "Moveu");
+    console.log(global.getRoom(decoded.room));
+
+};
+
+var placeBomb = function(data) {
+
+    var decoded = jwt.verify(data.token, server_key);
+    if(this.bombs.length < this.qtdBombs) {
+        var bomb = new Bomb(decoded.room,{});
+
+        bomb.then(function(res){
+            console.log(res);
+        });
+    }
+
+};
+
 var Player = function(_position, _token) {
 
         return {
@@ -17,35 +38,21 @@ var Player = function(_position, _token) {
             // Lista de bombas ativas
             bombs: [],
 
-            move: function(data) {
-
-                var decoded = jwt.verify(data.token, server_key);
-                global.io.in(decoded.room).emit('move', "Moveu");
-                console.log(global.getRoom(decoded.room));
-
-            },
-
-            placeBomb: function(data) {
-
-                var decoded = jwt.verify(data.token, server_key);
-                //if(bombs.length < qtdBombs) {
-                    var bomb = new Bomb(decoded.room,{});
-
-                    bomb.then(function(res){
-                        console.log(res);
-                    });
-                //}
-
-            },
+           
 
             init: function(socket) {
+                var that = this;
                 var decoded = jwt.verify(this.token, server_key);
                 socket.join(decoded.room);
 
                 socket.emit('token', this.token);
 
-                socket.on('move', this.move);
-                socket.on('placeBomb', this.placeBomb);
+                socket.on('move', function(data){
+                    move.call(that, data);
+                });
+                socket.on('placeBomb', function(data){
+                    placeBomb.call(that, data);
+                });
             }
         }
 
